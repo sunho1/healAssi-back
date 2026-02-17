@@ -1,3 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+.venv
+venv/
+env/
+.env
+
+# SQLite DB
+health.db
+*.db
+
+# IDE / macOS
+.vscode/
+.DS_Store
+
+# Byte-compiled / distribution
+build/
+dist/
+eggs/
+*.egg-info/
+
+# Testing
+.pytest_cache/
 # Python/FastAPI
 __pycache__/
 *.py[cod]
