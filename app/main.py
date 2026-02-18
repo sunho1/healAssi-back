@@ -5,6 +5,10 @@ from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
 from app.api.v1.endpoints import workouts
+from app.models.user import User
+from app.models.meal import Meal
+from app.models.workout import Workout
+from app.models.routine import Routine
 
 # DB 테이블 생성
 Base.metadata.create_all(bind=engine)
