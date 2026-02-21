@@ -1,7 +1,10 @@
 from pydantic_settings import BaseSettings
+from pydantic import ConfigDict
 import os
 
 class Settings(BaseSettings):
+    model_config = ConfigDict(env_file=".env", case_sensitive=True)
+    
     PROJECT_NAME: str = "HealAssi API"
     API_V1_STR: str = "/api/v1"
     SQLALCHEMY_DATABASE_URL: str = os.getenv(
@@ -13,9 +16,5 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "https://healassi-web.vercel.app",  # 웹 배포 URL 추가
     ]
-    
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
 
 settings = Settings()
