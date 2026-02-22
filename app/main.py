@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
-from app.api.v1.endpoints import workouts
+from app.api.v1.endpoints import workouts, diets, routines, auth
 from app.models.user import User
 from app.models.meal import Meal
 from app.models.workout import Workout
@@ -25,8 +25,18 @@ app.add_middleware(
 )
 
 # 라우터 등록
+app.include_router(auth.router, prefix=settings.API_V1_STR, tags=["auth"])
 app.include_router(workouts.router, prefix=f"{settings.API_V1_STR}/workouts", tags=["workouts"])
+app.include_router(diets.router, prefix=f"{settings.API_V1_STR}/meals", tags=["meals"])
+app.include_router(routines.router, prefix=f"{settings.API_V1_STR}/routines", tags=["routines"])
 
 @app.get("/")
 def root():
     return {"message": "Welcome to HealAssi API (Layered Architecture)"}
+
+@app.get("/api/health")
+def health_check():
+    """헬스 체크 엔드포인트"""
+    return {"status": "healthy"}
+
+

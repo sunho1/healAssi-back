@@ -16,5 +16,11 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "https://healassi-web.vercel.app",  # 웹 배포 URL 추가
     ]
+    
+    # JWT 설정
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production")
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
 settings = Settings()
