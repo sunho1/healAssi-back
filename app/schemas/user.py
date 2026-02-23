@@ -2,6 +2,8 @@
 유저 관련 Pydantic 스키마
 요청/응답 데이터 검증 및 문서화용
 """
+from __future__ import annotations
+
 from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 from typing import Optional
@@ -23,6 +25,15 @@ class UserSignupRequest(BaseModel):
                 "password": "securepassword123"
             }
         }
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "email": "user@example.com",
+                "username": "john_doe",
+                "password": "securepassword123"
+            }
+        }
+    }
 
 
 # ============ 로그인 관련 스키마 ============
@@ -39,6 +50,14 @@ class UserLoginRequest(BaseModel):
                 "password": "securepassword123"
             }
         }
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "email": "user@example.com",
+                "password": "securepassword123"
+            }
+        }
+    }
 
 
 class TokenResponse(BaseModel):
@@ -55,6 +74,15 @@ class TokenResponse(BaseModel):
                 "token_type": "bearer"
             }
         }
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                "token_type": "bearer"
+            }
+        }
+    }
 
 
 class LoginResponse(BaseModel):
@@ -79,6 +107,14 @@ class FindIdRequest(BaseModel):
                 "email": "user@example.com"
             }
         }
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "username": "john_doe",
+                "email": "user@example.com"
+            }
+        }
+    }
 
 
 class FindIdResponse(BaseModel):
@@ -93,6 +129,14 @@ class FindIdResponse(BaseModel):
                 "message": "이메일을 찾았습니다."
             }
         }
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "email": "us**@example.com",
+                "message": "이메일을 찾았습니다."
+            }
+        }
+    }
 
 
 # ============ 비밀번호 찾기 관련 스키마 ============
@@ -107,6 +151,13 @@ class FindPasswordRequest(BaseModel):
                 "email": "user@example.com"
             }
         }
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "email": "user@example.com"
+            }
+        }
+    }
 
 
 class ResetPasswordRequest(BaseModel):
@@ -121,6 +172,14 @@ class ResetPasswordRequest(BaseModel):
                 "new_password": "newpassword123"
             }
         }
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "token": "reset-token-xyz...",
+                "new_password": "newpassword123"
+            }
+        }
+    }
 
 
 class PasswordResetResponse(BaseModel):
@@ -135,6 +194,14 @@ class PasswordResetResponse(BaseModel):
                 "reset_token": "reset-token-xyz..."
             }
         }
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "message": "비밀번호 재설정 링크를 이메일로 전송했습니다.",
+                "reset_token": "reset-token-xyz..."
+            }
+        }
+    }
 
 
 # ============ 유저 응답 관련 스키마 ============
@@ -162,6 +229,20 @@ class UserResponse(BaseModel):
                 "last_login": None
             }
         }
+    model_config = {
+        "from_attributes": True,
+        "json_schema_extra": {
+            "example": {
+                "id": 1,
+                "email": "user@example.com",
+                "username": "john_doe",
+                "is_active": True,
+                "is_verified": False,
+                "created_at": "2024-01-15T10:30:00",
+                "last_login": None
+            }
+        }
+    }
 
 
 class UserDetailResponse(UserResponse):
