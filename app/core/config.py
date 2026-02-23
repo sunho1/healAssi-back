@@ -14,7 +14,8 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: list[str] = [
         "http://localhost:5173",
         "http://localhost:3000",
-        "https://healassi-web.vercel.app",  # 웹 배포 URL 추가
+        "https://healassi-web.vercel.app",
+        "https://heal-assistant.vercel.app",  # Vercel 배포 프론트엔드
     ]
     
     # JWT 설정
