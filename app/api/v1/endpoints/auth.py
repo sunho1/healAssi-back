@@ -22,7 +22,7 @@ from app.crud.crud_user import CRUDUser
 from app.core.security import SecurityUtils
 from app.core.config import settings
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter()
 
 
 # ============ 회원가입 ============
@@ -316,4 +316,3 @@ def verify_token(token: str) -> int:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="유효하지 않은 토큰 형식입니다."
         )
-

@@ -30,7 +30,7 @@ app.add_middleware(
 )
 
 # 라우터 등록
-app.include_router(auth.router, prefix=settings.API_V1_STR, tags=["auth"])
+app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
 app.include_router(workouts.router, prefix=f"{settings.API_V1_STR}/workouts", tags=["workouts"])
 app.include_router(diets.router, prefix=f"{settings.API_V1_STR}/meals", tags=["meals"])
 app.include_router(routines.router, prefix=f"{settings.API_V1_STR}/routines", tags=["routines"])
