@@ -17,14 +17,6 @@ class UserSignupRequest(BaseModel):
     username: str = Field(..., min_length=2, max_length=50, description="사용자 이름")
     password: str = Field(..., min_length=8, description="비밀번호 (최소 8자)")
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "email": "user@example.com",
-                "username": "john_doe",
-                "password": "securepassword123"
-            }
-        }
     model_config = {
         "json_schema_extra": {
             "example": {
@@ -43,13 +35,6 @@ class UserLoginRequest(BaseModel):
     email: EmailStr = Field(..., description="이메일 주소")
     password: str = Field(..., description="비밀번호")
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "email": "user@example.com",
-                "password": "securepassword123"
-            }
-        }
     model_config = {
         "json_schema_extra": {
             "example": {
@@ -66,14 +51,6 @@ class TokenResponse(BaseModel):
     refresh_token: str = Field(..., description="리프레시 토큰")
     token_type: str = Field(default="bearer", description="토큰 타입")
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                "token_type": "bearer"
-            }
-        }
     model_config = {
         "json_schema_extra": {
             "example": {
@@ -100,13 +77,6 @@ class FindIdRequest(BaseModel):
     username: str = Field(..., description="사용자 이름")
     email: EmailStr = Field(..., description="이메일 주소")
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "username": "john_doe",
-                "email": "user@example.com"
-            }
-        }
     model_config = {
         "json_schema_extra": {
             "example": {
@@ -122,13 +92,6 @@ class FindIdResponse(BaseModel):
     email: str = Field(..., description="찾은 이메일 (일부 마스킹)")
     message: str = Field(..., description="결과 메시지")
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "email": "us**@example.com",
-                "message": "이메일을 찾았습니다."
-            }
-        }
     model_config = {
         "json_schema_extra": {
             "example": {
@@ -145,12 +108,6 @@ class FindPasswordRequest(BaseModel):
     """비밀번호 찾기 요청"""
     email: EmailStr = Field(..., description="이메일 주소")
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "email": "user@example.com"
-            }
-        }
     model_config = {
         "json_schema_extra": {
             "example": {
@@ -165,13 +122,6 @@ class ResetPasswordRequest(BaseModel):
     token: str = Field(..., description="비밀번호 재설정 토큰")
     new_password: str = Field(..., min_length=8, description="새로운 비밀번호 (최소 8자)")
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "token": "reset-token-xyz...",
-                "new_password": "newpassword123"
-            }
-        }
     model_config = {
         "json_schema_extra": {
             "example": {
@@ -187,13 +137,6 @@ class PasswordResetResponse(BaseModel):
     message: str = Field(..., description="결과 메시지")
     reset_token: Optional[str] = Field(None, description="비밀번호 재설정 토큰")
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "message": "비밀번호 재설정 링크를 이메일로 전송했습니다.",
-                "reset_token": "reset-token-xyz..."
-            }
-        }
     model_config = {
         "json_schema_extra": {
             "example": {
@@ -216,19 +159,6 @@ class UserResponse(BaseModel):
     created_at: datetime = Field(..., description="가입일")
     last_login: Optional[datetime] = Field(None, description="마지막 로그인 시간")
 
-    class Config:
-        from_attributes = True
-        json_schema_extra = {
-            "example": {
-                "id": 1,
-                "email": "user@example.com",
-                "username": "john_doe",
-                "is_active": True,
-                "is_verified": False,
-                "created_at": "2024-01-15T10:30:00",
-                "last_login": None
-            }
-        }
     model_config = {
         "from_attributes": True,
         "json_schema_extra": {
