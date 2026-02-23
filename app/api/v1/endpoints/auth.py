@@ -230,6 +230,40 @@ def reset_password(token: str, new_password: str, db: Session = Depends(get_db))
     return {"message": "비밀번호가 성공적으로 재설정되었습니다."}
 
 
+def verify_token(token: str) -> int:
+    """
+    JWT 토큰 검증 및 유저 ID 추출
+    
+    인증이 필요한 엔드포인트에서 Depends()로 사용
+    """
+    # 실제로는 Authorization 헤더에서 토큰을 추출해야 합니다.
+    # 이 함수는 예시이며, 실제 구현에서는 FastAPI의 권장 방식을 따릅니다.
+    
+    payload = SecurityUtils.verify_token(token)
+    
+    if not payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="유효하지 않은 토큰입니다."
+        )
+    
+    user_id = payload.get("sub")
+    
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="토큰에 사용자 정보가 없습니다."
+        )
+    
+    try:
+        return int(user_id)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="유효하지 않은 토큰 형식입니다."
+        )
+
+
 # ============ 마이페이지 - 내 정보 조회 (인증 필요) ============
 
 @router.get("/me", response_model=UserResponse)

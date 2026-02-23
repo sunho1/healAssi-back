@@ -62,12 +62,7 @@ class TokenResponse(BaseModel):
     }
 
 
-class LoginResponse(BaseModel):
-    """로그인 응답"""
-    user: 'UserResponse'
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
+
 
 
 # ============ 아이디 찾기 관련 스키마 ============
@@ -183,3 +178,11 @@ class UserDetailResponse(UserResponse):
 class MessageResponse(BaseModel):
     """일반 메시지 응답"""
     message: str = Field(..., description="메시지")
+
+
+class LoginResponse(BaseModel):
+    """로그인 응답"""
+    user: UserResponse
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
