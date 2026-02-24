@@ -81,8 +81,10 @@ def health_check():
     try:
         # 데이터베이스 연결 테스트
         from app.db.session import SessionLocal
+        from sqlalchemy import text
+
         db = SessionLocal()
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
         db.close()
         return {
             "status": "healthy",
@@ -90,7 +92,7 @@ def health_check():
             "version": "1.0.0"
         }
     except Exception as e:
-        logger.error(f"Health check failed: {str(e)}")
+        logger.error(f"Health check failed: {str(e)}", exc_info=True)
         return {
             "status": "unhealthy",
             "database": "disconnected",

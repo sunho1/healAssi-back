@@ -5,6 +5,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from datetime import timedelta
+import logging
 from app.api.deps import get_db
 from app.schemas.user import (
     UserSignupRequest,
@@ -22,6 +23,7 @@ from app.crud.crud_user import CRUDUser
 from app.core.security import SecurityUtils
 from app.core.config import settings
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -31,21 +33,34 @@ router = APIRouter()
 def signup(user_data: UserSignupRequest, db: Session = Depends(get_db)):
     """
     회원가입 엔드포인트
-    
+
     - 이메일, 사용자 이름, 비밀번호를 받아 등록
     - 비밀번호는 해시하여 저장
     """
-    # 이미 등록된 이메일인지 확인
-    if CRUDUser.check_email_exists(db, user_data.email):
+    try:
+        logger.info(f"Signup attempt for email: {user_data.email}")
+
+        # 이미 등록된 이메일인지 확인
+        if CRUDUser.check_email_exists(db, user_data.email):
+            logger.warning(f"Email already exists: {user_data.email}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="이메일이 이미 등록되었습니다."
+            )
+
+        # 새로운 유저 생성
+        new_user = CRUDUser.create_user(db, user_data)
+        logger.info(f"User created successfully: {new_user.id}")
+
+        return new_user
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Signup error: {str(e)}", exc_info=True)
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="이메일이 이미 등록되었습니다."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"회원가입 처리 중 오류가 발생했습니다: {str(e)}"
         )
-    
-    # 새로운 유저 생성
-    new_user = CRUDUser.create_user(db, user_data)
-    
-    return new_user
 
 
 # ============ 로그인 ============
