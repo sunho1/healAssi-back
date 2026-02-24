@@ -5,6 +5,7 @@ import os
 class Settings(BaseSettings):
     model_config = ConfigDict(env_file=".env", case_sensitive=True, extra='ignore')
     
+    DATABASE_URL: str
     PROJECT_NAME: str = "HealAssi API"
     API_V1_STR: str = "/api/v1"
     SQLALCHEMY_DATABASE_URL: str = os.getenv(
