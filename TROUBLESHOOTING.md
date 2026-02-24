@@ -342,12 +342,69 @@ curl http://localhost:8000/api/health
 
 ---
 
+---
+
+### 🔴 문제 #5: passlib과 bcrypt 버전 충돌
+
+**발생 시간**: 문제 #4 수정 후
+
+**에러 메시지**:
+```
+AttributeError: module 'bcrypt' has no attribute '__about__'
+WARNING:passlib.handlers.bcrypt:(trapped) error reading bcrypt version
+password cannot be longer than 72 bytes
+```
+
+**원인**:
+- `passlib[bcrypt]==1.7.4`는 오래된 버전
+- bcrypt 버전이 명시되지 않아 최신 4.2.0 설치됨
+- bcrypt 4.0+에서 `__about__` 속성 제거로 passlib과 호환 문제
+- passlib이 bcrypt 버전을 읽을 수 없어 에러 발생
+
+**해결 방법**:
+
+**[requirements.txt](requirements.txt) - bcrypt 버전 명시**
+```diff
+  passlib[bcrypt]==1.7.4
++ bcrypt==4.0.1
+  python-jose[cryptography]==3.3.0
+```
+
+**bcrypt 버전 선택 이유**:
+- `bcrypt==4.0.1`: passlib 1.7.4와 호환되는 최신 안정 버전
+- `bcrypt==3.2.2`: 더 안전하지만 구버전
+- `bcrypt==4.1.0+`: passlib 1.7.4와 호환 문제 있음
+
+**결과**: ✅ bcrypt 정상 작동
+
+---
+
 ## 📝 업데이트 로그
 
 | 날짜 | 작성자 | 내용 |
 |------|--------|------|
-| 2026-02-25 | Claude | Railway 배포 에러 수정 (4건) |
+| 2026-02-25 | Claude | Railway 배포 에러 수정 (5건) |
 | 2026-02-25 | Claude | 로깅 및 에러 핸들링 강화 |
+
+---
+
+## 📋 최종 의존성 버전
+
+```txt
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+sqlalchemy==2.0.23
+pydantic==2.5.0
+pydantic-settings==2.1.0
+psycopg2-binary==2.9.9
+python-dotenv==1.0.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1              # ← 명시적 버전 지정
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.6
+pytz==2023.3
+email-validator==2.1.0     # ← Pydantic v2 호환
+```
 
 ---
 
