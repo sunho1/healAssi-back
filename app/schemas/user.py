@@ -15,7 +15,12 @@ class UserSignupRequest(BaseModel):
     """회원가입 요청"""
     email: EmailStr = Field(..., description="이메일 주소")
     username: str = Field(..., min_length=2, max_length=50, description="사용자 이름")
-    password: str = Field(..., min_length=8, description="비밀번호 (최소 8자)")
+    password: str = Field(
+        ...,
+        min_length=8,
+        max_length=72,
+        description="비밀번호 (8-72자, bcrypt 제한)"
+    )
 
     model_config = {
         "json_schema_extra": {
@@ -115,7 +120,12 @@ class FindPasswordRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     """비밀번호 재설정 요청"""
     token: str = Field(..., description="비밀번호 재설정 토큰")
-    new_password: str = Field(..., min_length=8, description="새로운 비밀번호 (최소 8자)")
+    new_password: str = Field(
+        ...,
+        min_length=8,
+        max_length=72,
+        description="새로운 비밀번호 (8-72자, bcrypt 제한)"
+    )
 
     model_config = {
         "json_schema_extra": {

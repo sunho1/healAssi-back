@@ -15,7 +15,19 @@ class SecurityUtils:
     
     @staticmethod
     def hash_password(password: str) -> str:
-        """비밀번호를 해시하여 저장"""
+        """
+        비밀번호를 해시하여 저장
+
+        bcrypt는 72바이트 제한이 있으므로,
+        필요시 자동으로 잘라냅니다.
+        """
+        # bcrypt는 72바이트까지만 처리 가능
+        # UTF-8 인코딩 시 72바이트를 초과할 수 있으므로 체크
+        password_bytes = password.encode('utf-8')
+        if len(password_bytes) > 72:
+            # 72바이트로 자르기
+            password = password_bytes[:72].decode('utf-8', errors='ignore')
+
         return pwd_context.hash(password)
     
     @staticmethod
