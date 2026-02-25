@@ -12,7 +12,8 @@ class Routine(Base):
     title = Column(String, index=True)
     count = Column(Integer)
     time = Column(String)
-    exercises = Column(String)  # JSON string
+    exercises = Column(String)    # JSON string
+    active_days = Column(String, default="[]")  # JSON string e.g. '["월","수","금"]' or '["매일"]'
 
     # N:1 관계
     user = relationship("User", back_populates="routines")

@@ -67,6 +67,18 @@ async def startup_event():
     logger.info(f"Environment: DATABASE_URL configured")
     logger.info(f"CORS origins: {settings.BACKEND_CORS_ORIGINS}")
 
+    # routines 테이블에 active_days 컬럼 추가 (없는 경우)
+    try:
+        from sqlalchemy import text
+        from app.db.session import SessionLocal
+        db = SessionLocal()
+        db.execute(text("ALTER TABLE routines ADD COLUMN active_days TEXT DEFAULT '[]'"))
+        db.commit()
+        db.close()
+        logger.info("Migration: active_days column added to routines")
+    except Exception:
+        pass  # 이미 존재하는 컬럼이면 무시
+
 @app.get("/")
 def root():
     return {

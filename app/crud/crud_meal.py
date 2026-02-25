@@ -7,12 +7,19 @@ def get_meal(db: Session, meal_id: int):
     return db.query(Meal).filter(Meal.id == meal_id).first()
 
 
-def get_meals(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Meal).offset(skip).limit(limit).all()
+def get_meals(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return (
+        db.query(Meal)
+        .filter(Meal.user_id == user_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
-def create_meal(db: Session, meal: MealCreate):
+def create_meal(db: Session, meal: MealCreate, user_id: int):
     db_meal = Meal(
+        user_id=user_id,
         type=meal.type,
         menu=meal.menu,
         kcal=meal.kcal,

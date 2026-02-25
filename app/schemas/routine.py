@@ -1,12 +1,21 @@
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
+from typing import List, Optional
+
+
+class SetDetail(BaseModel):
+    sets: str = ""
+    reps: str = ""
+    weight: str = ""
 
 
 class Exercise(BaseModel):
     name: str
-    sets: str
-    reps: str
-    weight: str
+    body_part: str = ""
+    set_details: List[SetDetail] = []
+    # 이전 버전 호환 필드 (flat 구조)
+    sets: Optional[str] = None
+    reps: Optional[str] = None
+    weight: Optional[str] = None
 
 
 class RoutineBase(BaseModel):
@@ -15,6 +24,7 @@ class RoutineBase(BaseModel):
     count: int
     time: str
     exercises: List[Exercise]
+    active_days: List[str] = []  # 예: ["월", "수", "금"] 또는 ["매일"]
 
 
 class RoutineCreate(RoutineBase):
