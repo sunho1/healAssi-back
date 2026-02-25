@@ -69,38 +69,39 @@ def signup(user_data: UserSignupRequest, db: Session = Depends(get_db)):
 def login(credentials: UserLoginRequest, db: Session = Depends(get_db)):
     """
     로그인 엔드포인트
-    
+
     - 이메일과 비밀번호로 인증
     - 성공하면 JWT 토큰(액세스, 리프레시) 발급
     """
-    # 비밀번호 검증
-    user = CRUDUser.verify_user_password(db, credentials.email, credentials.password)
-    
+    _INVALID_CREDENTIALS = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="이메일 또는 비밀번호가 맞지 않습니다."
+    )
+
+    try:
+        user = CRUDUser.verify_user_password(db, credentials.email, credentials.password)
+    except Exception as e:
+        logger.error(f"Login verify error: {str(e)}", exc_info=True)
+        raise _INVALID_CREDENTIALS
+
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="이메일 또는 비밀번호가 맞지 않습니다."
-        )
-    
+        raise _INVALID_CREDENTIALS
+
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="비활성화된 계정입니다."
         )
-    
-    # 액세스 토큰 생성
+
     access_token = SecurityUtils.create_access_token(
         data={"sub": str(user.id), "email": user.email}
     )
-    
-    # 리프레시 토큰 생성
     refresh_token = SecurityUtils.create_refresh_token(
         data={"sub": str(user.id), "email": user.email}
     )
-    
-    # 마지막 로그인 시간 업데이트
+
     CRUDUser.update_last_login(db, user.id)
-    
+
     return {
         "user": user,
         "access_token": access_token,

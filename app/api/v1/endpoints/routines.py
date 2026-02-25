@@ -39,6 +39,19 @@ def read_routine(routine_id: int, db: Session = Depends(deps.get_db)):
     return db_routine
 
 
+@router.put("/{routine_id}", response_model=schemas.Routine)
+def update_routine(routine_id: int, routine: schemas.RoutineUpdate, db: Session = Depends(deps.get_db)):
+    db_routine = crud_routine.get_routine(db, routine_id=routine_id)
+    if db_routine is None:
+        raise HTTPException(status_code=404, detail="Routine not found")
+    updated = crud_routine.update_routine(db=db, db_obj=db_routine, routine_in=routine)
+    try:
+        updated.exercises = json.loads(updated.exercises) if updated.exercises else []
+    except Exception:
+        updated.exercises = []
+    return updated
+
+
 @router.delete("/{routine_id}")
 def delete_routine(routine_id: int, db: Session = Depends(deps.get_db)):
     db_routine = crud_routine.get_routine(db, routine_id=routine_id)

@@ -272,7 +272,7 @@ def signup(user_data: UserSignupRequest, db: Session = Depends(get_db)):
 | `app/api/v1/endpoints/auth.py` | signup 로깅 추가 | 에러 추적 |
 | `app/schemas/user.py` | password max_length=72 추가 | bcrypt 제한 |
 | `app/core/security.py` | 72바이트 초과 시 자동 절단 | 방어 코드 |
-| `requirements.txt` | email-validator 1.3.1→2.1.0 | Pydantic v2 호환 |
+| `requirements.txt` | email-validator 1.3.1→2.1.0, bcrypt==4.0.1 추가 | Pydantic v2, passlib 호환 |
 | `railway.json` | 설정 단순화 | 자동 감지 활용 |
 | `nixpacks.toml` | 삭제 | 충돌 제거 |
 | `Procfile` | uvicorn 직접 사용 | 단순화 |
@@ -379,11 +379,54 @@ password cannot be longer than 72 bytes
 
 ---
 
+---
+
+### 🔴 문제 #6: 로그인 실패 시 404/500 에러 반환
+
+**발생 시간**: 배포 후 로그인 테스트
+
+**에러 메시지**:
+```
+HTTP 404 또는 500 (비밀번호 오류 시)
+```
+
+**원인**:
+- `verify_user_password` 내부에서 bcrypt가 예외를 던질 때 try-except 없음
+- 예외가 그대로 global exception handler로 전달되어 500 또는 예상치 못한 상태 코드 반환
+- 이메일/비밀번호 불일치 시 의도한 401이 아닌 다른 상태 코드 노출
+
+**해결 방법**:
+
+**[app/api/v1/endpoints/auth.py](app/api/v1/endpoints/auth.py) - login 에러 처리 통일**
+```python
+_INVALID_CREDENTIALS = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="이메일 또는 비밀번호가 맞지 않습니다."
+)
+
+try:
+    user = CRUDUser.verify_user_password(db, credentials.email, credentials.password)
+except Exception as e:
+    logger.error(f"Login verify error: {str(e)}", exc_info=True)
+    raise _INVALID_CREDENTIALS  # bcrypt 에러 포함, 항상 동일한 메시지 반환
+
+if not user:
+    raise _INVALID_CREDENTIALS
+```
+
+**핵심 원칙**:
+- 이메일 없음 / 비밀번호 틀림 / 내부 에러 → 모두 동일한 `401` 응답
+- 공격자가 이메일 존재 여부를 알 수 없도록 (보안)
+
+**결과**: ✅ 로그인 실패 시 항상 `401 이메일 또는 비밀번호가 맞지 않습니다.` 반환
+
+---
+
 ## 📝 업데이트 로그
 
 | 날짜 | 작성자 | 내용 |
 |------|--------|------|
-| 2026-02-25 | Claude | Railway 배포 에러 수정 (5건) |
+| 2026-02-25 | Claude | Railway 배포 에러 수정 (6건) |
 | 2026-02-25 | Claude | 로깅 및 에러 핸들링 강화 |
 
 ---
