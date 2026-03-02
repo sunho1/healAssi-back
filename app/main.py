@@ -6,11 +6,12 @@ import logging
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
-from app.api.v1.endpoints import workouts, diets, routines, auth
+from app.api.v1.endpoints import workouts, diets, routines, auth, workout_logs
 from app.models.user import User
 from app.models.meal import Meal
 from app.models.workout import Workout
 from app.models.routine import Routine
+from app.models.workout_log import WorkoutLog
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -50,6 +51,7 @@ app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["aut
 app.include_router(workouts.router, prefix=f"{settings.API_V1_STR}/workouts", tags=["workouts"])
 app.include_router(diets.router, prefix=f"{settings.API_V1_STR}/meals", tags=["meals"])
 app.include_router(routines.router, prefix=f"{settings.API_V1_STR}/routines", tags=["routines"])
+app.include_router(workout_logs.router, prefix=f"{settings.API_V1_STR}/workout-logs", tags=["workout-logs"])
 
 # 전역 예외 핸들러
 @app.exception_handler(Exception)
